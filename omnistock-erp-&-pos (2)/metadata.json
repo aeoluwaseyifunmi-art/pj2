@@ -1,0 +1,6 @@
+{
+  "name": "OmniStock ERP & POS",
+  "description": "Unified Wholesale & Retail Database System with real-time multi-location inventory ledger, tiered volume pricing, live point-of-sale terminal, and audit-grade POS reporting analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

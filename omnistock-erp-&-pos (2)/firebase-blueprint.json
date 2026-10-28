@@ -1,0 +1,270 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Master catalog product with retail and wholesale pricing attributes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "sku": { "type": "string", "maxLength": 64 },
+        "barcode": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "unit": { "type": "string", "maxLength": 50 },
+        "costPrice": { "type": "number" },
+        "retailPrice": { "type": "number" },
+        "wholesaleBasePrice": { "type": "number" },
+        "minWholesaleQty": { "type": "number" },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "taxRate": { "type": "number" },
+        "reorderThreshold": { "type": "number" },
+        "targetStockLevel": { "type": "number" }
+      },
+      "required": ["id", "sku", "name", "costPrice", "retailPrice", "wholesaleBasePrice"]
+    },
+    "InventoryLevel": {
+      "title": "InventoryLevel",
+      "description": "Multi-location physical inventory balances and lot/batch allocations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "productId": { "type": "string", "maxLength": 128 },
+        "locationId": { "type": "string", "maxLength": 128 },
+        "quantityOnHand": { "type": "number" },
+        "quantityReserved": { "type": "number" },
+        "batchLot": { "type": "string", "maxLength": 64 },
+        "binLocation": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "productId", "locationId", "quantityOnHand"]
+    },
+    "Location": {
+      "title": "Location",
+      "description": "Central warehouse, retail storefront, or fulfillment center",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "code": { "type": "string", "maxLength": 20 },
+        "type": { "type": "string", "enum": ["warehouse", "retail_store", "distribution_center"] },
+        "address": { "type": "string", "maxLength": 300 },
+        "isPrimary": { "type": "boolean" }
+      },
+      "required": ["id", "name", "code", "type"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Retail patron, VIP member, or commercial wholesale business account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "companyName": { "type": "string", "maxLength": 200 },
+        "type": { "type": "string", "enum": ["retail_walkin", "wholesale_business", "vip_retail"] },
+        "taxId": { "type": "string", "maxLength": 64 },
+        "resaleCertVerified": { "type": "boolean" },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "paymentTerms": { "type": "string", "enum": ["immediate", "net15", "net30", "net60"] },
+        "creditLimit": { "type": "number" },
+        "outstandingBalance": { "type": "number" }
+      },
+      "required": ["id", "name", "type", "email"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "POS checkout transaction or B2B commercial invoice",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "orderNumber": { "type": "string", "maxLength": 64 },
+        "channel": { "type": "string", "enum": ["retail", "wholesale"] },
+        "locationId": { "type": "string", "maxLength": 128 },
+        "locationName": { "type": "string", "maxLength": 100 },
+        "customerId": { "type": "string", "maxLength": 128 },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "subtotal": { "type": "number" },
+        "discountTotal": { "type": "number" },
+        "taxTotal": { "type": "number" },
+        "grandTotal": { "type": "number" },
+        "costTotal": { "type": "number" },
+        "paymentMethod": { "type": "string", "maxLength": 50 },
+        "paymentStatus": { "type": "string", "maxLength": 50 },
+        "cashier": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "orderNumber", "channel", "grandTotal", "createdAt"]
+    },
+    "StockMovement": {
+      "title": "StockMovement",
+      "description": "Immutable ledger record for inventory changes across facilities",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "timestamp": { "type": "string", "maxLength": 64 },
+        "productId": { "type": "string", "maxLength": 128 },
+        "locationId": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "maxLength": 50 },
+        "quantityChange": { "type": "number" },
+        "previousQty": { "type": "number" },
+        "newQty": { "type": "number" },
+        "referenceNumber": { "type": "string", "maxLength": 64 },
+        "reason": { "type": "string", "maxLength": 500 },
+        "operator": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "timestamp", "productId", "locationId", "quantityChange", "referenceNumber"]
+    },
+    "RegisterShift": {
+      "title": "RegisterShift",
+      "description": "Cashier register shift session for end-of-day Z-Report reconciliation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "registerId": { "type": "string", "maxLength": 64 },
+        "locationId": { "type": "string", "maxLength": 128 },
+        "cashier": { "type": "string", "maxLength": 100 },
+        "openingFloat": { "type": "number" },
+        "openedAt": { "type": "string", "maxLength": 64 },
+        "closedAt": { "type": "string", "maxLength": 64 },
+        "cashCollected": { "type": "number" },
+        "cardCollected": { "type": "number" },
+        "expectedCash": { "type": "number" },
+        "actualCashCount": { "type": "number" },
+        "cashVariance": { "type": "number" },
+        "status": { "type": "string", "enum": ["open", "closed"] }
+      },
+      "required": ["id", "registerId", "locationId", "openingFloat", "status"]
+    },
+    "Inputer": {
+      "title": "Inputer",
+      "description": "Storefront cashier or wholesale data entry inputer authorized to execute transactions and print receipts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "staffCode": { "type": "string", "maxLength": 32 },
+        "name": { "type": "string", "maxLength": 150 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "pin": { "type": "string", "maxLength": 16 },
+        "role": { "type": "string", "enum": ["retail_inputer", "wholesale_inputer", "senior_cashier", "shift_supervisor"] },
+        "assignedLocationId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "receiptsPrintedCount": { "type": "number" },
+        "totalSalesVolume": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "lastActiveAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "staffCode", "name", "pin", "role", "assignedLocationId", "status"]
+    },
+    "InputerActivity": {
+      "title": "InputerActivity",
+      "description": "Real-time audit record of actions performed by individual inputers including logins, sales, receipt printing, and stock adjustments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "inputerId": { "type": "string", "maxLength": 128 },
+        "inputerName": { "type": "string", "maxLength": 150 },
+        "actionType": { "type": "string", "enum": ["login", "sale_completed", "receipt_printed", "stock_adjustment", "shift_opened", "shift_closed", "pin_updated"] },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 500 },
+        "locationId": { "type": "string", "maxLength": 128 },
+        "locationName": { "type": "string", "maxLength": 150 },
+        "referenceNumber": { "type": "string", "maxLength": 64 },
+        "amount": { "type": "number" },
+        "timestamp": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "inputerId", "inputerName", "actionType", "title", "timestamp"]
+    },
+    "LinkedBankAccount": {
+      "title": "LinkedBankAccount",
+      "description": "Business settlement bank account connected for direct clearing and payment verification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "bankName": { "type": "string", "maxLength": 150 },
+        "accountName": { "type": "string", "maxLength": 150 },
+        "accountNumber": { "type": "string", "maxLength": 64 },
+        "routingNumber": { "type": "string", "maxLength": 64 },
+        "swiftBic": { "type": "string", "maxLength": 64 },
+        "currency": { "type": "string", "maxLength": 10 },
+        "accountType": { "type": "string", "enum": ["merchant_settlement", "checking", "savings"] },
+        "isDefault": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["active", "pending_verification", "disconnected"] },
+        "balance": { "type": "number" },
+        "lastSyncedAt": { "type": "string", "maxLength": 64 },
+        "autoVerifyIncoming": { "type": "boolean" }
+      },
+      "required": ["id", "bankName", "accountName", "accountNumber", "accountType", "status"]
+    },
+    "BankTransaction": {
+      "title": "BankTransaction",
+      "description": "Real-time bank ledger transaction with automatic verification and clearing proof",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "bankAccountId": { "type": "string", "maxLength": 128 },
+        "bankName": { "type": "string", "maxLength": 150 },
+        "orderId": { "type": "string", "maxLength": 128 },
+        "orderNumber": { "type": "string", "maxLength": 64 },
+        "referenceCode": { "type": "string", "maxLength": 64 },
+        "type": { "type": "string", "enum": ["credit_sale", "wholesale_settlement", "transfer_in", "payout"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "senderName": { "type": "string", "maxLength": 150 },
+        "status": { "type": "string", "enum": ["verified", "pending", "failed"] },
+        "verifiedAt": { "type": "string", "maxLength": 64 },
+        "verifiedBy": { "type": "string", "enum": ["auto_bank_webhook", "instant_api", "manual_admin"] },
+        "description": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "bankAccountId", "bankName", "referenceCode", "amount", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Master products collection"
+    },
+    "/inventory_levels/{inventoryId}": {
+      "schema": { "$ref": "#/entities/InventoryLevel" },
+      "description": "Stock balances across warehouse and retail facilities"
+    },
+    "/locations/{locationId}": {
+      "schema": { "$ref": "#/entities/Location" },
+      "description": "Storefronts and distribution center facilities"
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/Customer" },
+      "description": "Retail and wholesale customer profiles"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "POS sales and wholesale B2B transactions"
+    },
+    "/stock_movements/{movementId}": {
+      "schema": { "$ref": "#/entities/StockMovement" },
+      "description": "Inventory movement audit ledger"
+    },
+    "/shifts/{shiftId}": {
+      "schema": { "$ref": "#/entities/RegisterShift" },
+      "description": "Cash register shifts and Z-reports"
+    },
+    "/inputers/{inputerId}": {
+      "schema": { "$ref": "#/entities/Inputer" },
+      "description": "Staff inputer profiles and web access keys"
+    },
+    "/inputer_activities/{activityId}": {
+      "schema": { "$ref": "#/entities/InputerActivity" },
+      "description": "Real-time activity and audit log for staff inputers"
+    },
+    "/linked_bank_accounts/{bankId}": {
+      "schema": { "$ref": "#/entities/LinkedBankAccount" },
+      "description": "Linked business settlement bank accounts"
+    },
+    "/bank_transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/BankTransaction" },
+      "description": "Auto-verified bank transactions and settlement records"
+    }
+  }
+}

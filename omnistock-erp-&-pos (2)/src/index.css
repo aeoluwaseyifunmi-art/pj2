@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-editorial: #F8F7F4;
+    --ink: #1a1a1a;
+    --accent: #b8860b;
+    --ink-faint: rgba(26, 26, 26, 0.1);
+  }
+
+  body {
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #0c1017;
+    color: #e2e8f0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code, kbd, samp, pre {
+    font-family: 'Space Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  .font-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .font-mono {
+    font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom scrollbar for dense data tables and terminals */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* =========================================================================
+   WAREHOUSE LIGHT THEME (Optimized for high-glare industrial LED & daylight)
+   ========================================================================= */
+html.light body {
+  background-color: #F8F7F4 !important;
+  color: #1a1a1a !important;
+}
+
+/* Light mode scrollbar */
+html.light ::-webkit-scrollbar-track {
+  background: #F8F7F4;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Surface backgrounds */
+html.light .bg-slate-950 {
+  background-color: #F8F7F4 !important;
+}
+
+html.light .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.light .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-800\/50,
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/80 {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .hover\:bg-slate-800:hover {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .hover\:bg-slate-700:hover {
+  background-color: #cbd5e1 !important;
+}
+
+html.light .hover\:bg-slate-900:hover {
+  background-color: #f8fafc !important;
+}
+
+/* High contrast borders */
+html.light .border-slate-800,
+html.light .border-slate-800\/80,
+html.light .border-slate-800\/60,
+html.light .border-slate-800\/50 {
+  border-color: #cbd5e1 !important;
+}
+
+html.light .border-slate-700,
+html.light .border-slate-700\/80 {
+  border-color: #94a3b8 !important;
+}
+
+html.light .divide-slate-800 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #cbd5e1 !important;
+}
+
+/* High contrast text hierarchy */
+html.light .text-slate-100,
+html.light .text-slate-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-300 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Ensure text-white is dark only outside of vibrant action buttons */
+html.light header .text-white,
+html.light h1.text-white,
+html.light h2.text-white,
+html.light h3.text-white,
+html.light span.text-white:not(.badge *):not(button *) {
+  color: #0f172a !important;
+}
+
+/* Status Badges & Accents in Warehouse Light Mode */
+html.light .bg-emerald-950,
+html.light .bg-emerald-950\/80,
+html.light .bg-emerald-950\/50 {
+  background-color: #ecfdf5 !important;
+  border-color: #6ee7b7 !important;
+}
+
+html.light .text-emerald-400 {
+  color: #047857 !important;
+}
+
+html.light .bg-cyan-950,
+html.light .bg-cyan-950\/80,
+html.light .bg-cyan-950\/50 {
+  background-color: #ecfeff !important;
+  border-color: #67e8f9 !important;
+}
+
+html.light .text-cyan-400 {
+  color: #0891b2 !important;
+}
+
+html.light .text-cyan-300 {
+  color: #0e7490 !important;
+}
+
+html.light .bg-amber-950,
+html.light .bg-amber-950\/80,
+html.light .bg-amber-950\/50 {
+  background-color: #fffbeb !important;
+  border-color: #fcd34d !important;
+}
+
+html.light .text-amber-400 {
+  color: #b45309 !important;
+}
+
+html.light .bg-rose-950,
+html.light .bg-rose-950\/80,
+html.light .bg-rose-950\/50 {
+  background-color: #fff1f2 !important;
+  border-color: #fda4af !important;
+}
+
+html.light .text-rose-400 {
+  color: #be123c !important;
+}
+
+html.light .bg-purple-950,
+html.light .bg-purple-950\/80 {
+  background-color: #faf5ff !important;
+  border-color: #d8b4fe !important;
+}
+
+html.light .text-purple-400 {
+  color: #6b21a8 !important;
+}
+
+html.light .bg-blue-950,
+html.light .bg-blue-950\/80 {
+  background-color: #eff6ff !important;
+  border-color: #93c5fd !important;
+}
+
+html.light .text-blue-400 {
+  color: #1d4ed8 !important;
+}
+
+/* Input boxes & form fields in light mode */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Thermal receipt & B2B Invoice print layout */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}

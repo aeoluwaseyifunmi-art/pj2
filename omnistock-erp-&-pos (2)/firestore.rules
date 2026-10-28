@@ -1,0 +1,168 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Connection validation test document
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Products catalog
+    match /products/{productId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(productId)
+        && incoming().id is string && incoming().id.size() <= 128
+        && incoming().sku is string && incoming().sku.size() <= 64
+        && incoming().name is string && incoming().name.size() <= 200
+        && incoming().costPrice is number
+        && incoming().retailPrice is number
+        && incoming().wholesaleBasePrice is number;
+      allow update: if isSignedIn() && isValidId(productId)
+        && incoming().id == existing().id
+        && incoming().costPrice is number
+        && incoming().retailPrice is number
+        && incoming().wholesaleBasePrice is number;
+      allow delete: if isSignedIn() && isValidId(productId);
+    }
+
+    // Inventory Levels across locations
+    match /inventory_levels/{inventoryId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(inventoryId)
+        && incoming().productId is string
+        && incoming().locationId is string
+        && incoming().quantityOnHand is number;
+      allow update: if isSignedIn() && isValidId(inventoryId)
+        && incoming().quantityOnHand is number;
+      allow delete: if isSignedIn() && isValidId(inventoryId);
+    }
+
+    // Facilities and Locations
+    match /locations/{locationId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(locationId)
+        && incoming().name is string
+        && incoming().code is string;
+      allow delete: if false;
+    }
+
+    // Customer Accounts
+    match /customers/{customerId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(customerId)
+        && incoming().name is string
+        && incoming().type in ['retail_walkin', 'wholesale_business', 'vip_retail']
+        && incoming().email is string;
+      allow update: if isSignedIn() && isValidId(customerId)
+        && incoming().id == existing().id;
+      allow delete: if isSignedIn() && isValidId(customerId);
+    }
+
+    // Orders and Transactions
+    match /orders/{orderId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(orderId)
+        && incoming().orderNumber is string
+        && incoming().channel in ['retail', 'wholesale']
+        && incoming().grandTotal is number
+        && incoming().createdAt is string;
+      allow update: if isSignedIn() && isValidId(orderId)
+        && incoming().orderNumber == existing().orderNumber;
+      allow delete: if false; // Orders are financial records, no deletion allowed
+    }
+
+    // Stock Movements (Immutable Ledger)
+    match /stock_movements/{movementId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(movementId)
+        && incoming().productId is string
+        && incoming().locationId is string
+        && incoming().quantityChange is number
+        && incoming().referenceNumber is string;
+      allow update, delete: if false; // Immutable ledger
+    }
+
+    // Register Shifts
+    match /shifts/{shiftId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(shiftId)
+        && incoming().registerId is string
+        && incoming().locationId is string
+        && incoming().openingFloat is number
+        && incoming().status in ['open', 'closed'];
+      allow update: if isSignedIn() && isValidId(shiftId)
+        && incoming().status in ['open', 'closed'];
+      allow delete: if false;
+    }
+
+    // Inputers & POS Data Entry Staff
+    match /inputers/{inputerId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(inputerId)
+        && incoming().name is string
+        && incoming().staffCode is string
+        && incoming().pin is string
+        && incoming().role in ['retail_inputer', 'wholesale_inputer', 'senior_cashier', 'shift_supervisor']
+        && incoming().status in ['active', 'suspended'];
+      allow delete: if isSignedIn() && isValidId(inputerId);
+    }
+
+    // Real-time Inputer Activities & Audit Log
+    match /inputer_activities/{activityId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(activityId)
+        && incoming().inputerId is string
+        && incoming().actionType is string
+        && incoming().timestamp is string;
+      allow update, delete: if false; // Immutable audit trail
+    }
+
+    // Linked Business Settlement Bank Accounts
+    match /linked_bank_accounts/{bankId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(bankId)
+        && incoming().bankName is string
+        && incoming().accountName is string
+        && incoming().accountNumber is string
+        && incoming().accountType in ['merchant_settlement', 'checking', 'savings']
+        && incoming().status in ['active', 'pending_verification', 'disconnected'];
+      allow delete: if isSignedIn() && isValidId(bankId);
+    }
+
+    // Auto-verified Bank Transactions & Settlement Ledger
+    match /bank_transactions/{transactionId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(transactionId)
+        && incoming().bankAccountId is string
+        && incoming().referenceCode is string
+        && incoming().amount is number
+        && incoming().status in ['verified', 'pending', 'failed'];
+      allow update: if isSignedIn() && isValidId(transactionId)
+        && incoming().status in ['verified', 'pending', 'failed'];
+      allow delete: if false; // Bank audit ledger is immutable
+    }
+  }
+}
